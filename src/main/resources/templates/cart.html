@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Cart</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<nav class="navbar">
+  <a th:href="@{/orders}">Orders</a>
+  <a th:href="@{/browse}">Browse Clothes</a>
+</nav>
+<h1>Your Laundry Basket</h1>
+<table class="cart-table">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Quantity</th>
+    <th>Unit Price</th>
+    <th>Total</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="item, iter : ${cartItems}" th:with="cloth = ${cartClothes[iter.index]}">
+    <td th:text="${cloth.name}"></td>
+    <td th:text="${item.quantity}"></td>
+    <td th:text="'$' + ${cloth.unitPrice}"></td>
+    <td th:text="'$' + ${cloth.unitPrice.multiply(item.quantity)}"></td>
+    <td><a th:href="@{/cart/remove/{clothId}(clothId=${item.clothId})}" class="delete-btn">Delete</a></td>
+  </tr>
+  </tbody>
+</table>
+<br><br>
+<p th:text="'Total Amount: $' + ${total}"></p>
+<br>
+<a th:href="@{/cart/clear}" class="delete-btn">Clear Cart</a>
+<a th:href="@{/order/form}" class="confirm-btn">Confirm Selection</a>
+</body>
+</html>

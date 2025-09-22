@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Browse Clothes</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<nav class="navbar">
+    <a th:href="@{/orders}">Orders</a>
+    <a th:href="@{/browse}">Browse Clothes</a>
+</nav>
+<div class="category-menu">
+    <a th:each="category : ${categories}" th:href="@{/browse(categoryId=${category.categoryId})}" th:class="${selectedCategoryId == category.categoryId ? 'active' : ''}" th:text="${category.name}"></a>
+</div>
+<a th:href="@{/cart}" class="basket-icon"> Laundry Basket 🧺</a>
+
+<div th:if="${clothes}">
+    <h1>Clothes in Selected Category</h1>
+    <div class="clothes-grid">
+        <div th:each="cloth : ${clothes}" class="cloth-item">
+            <img th:src="@{${cloth.imagePath}}" alt="Cloth Image" width="150" />
+            <h3 th:text="${cloth.name}"></h3>
+            <p th:text="'Price: $' + ${cloth.unitPrice}"></p>
+            <form th:action="@{/browse/add}" method="post">
+                <input type="hidden" th:name="clothId" th:value="${cloth.clothId}" />
+                <input type="hidden" th:name="categoryId" th:value="${selectedCategoryId}" />
+                <div class="quantity-controls">
+                    <button type="button" onclick="decrement(this)">-</button>
+                    <input type="number" name="quantity"
+                           th:value="${cartQuantities[cloth.clothId] != null ? cartQuantities[cloth.clothId] : 0}"
+                           min="0" readonly />
+                    <button type="button" onclick="increment(this)">+</button>
+                </div>
+                <button type="submit">Update Cart</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function increment(button) {
+        var input = button.previousElementSibling;
+        input.value = parseInt(input.value) + 1;
+    }
+    function decrement(button) {
+        var input = button.nextElementSibling;
+        if (parseInt(input.value) > 0) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+</script>
+</body>
+</html>

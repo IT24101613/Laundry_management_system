@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Orders Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<nav class="navbar">
+    <a th:href="@{/orders}">Orders</a>
+    <a th:href="@{/browse}">Browse Clothes</a>
+</nav>
+<div class="main-content">
+    <h1>Current Orders</h1>
+    <table class="order-table">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Service Type</th>
+            <th>Pickup Date</th>
+            <th>Delivery Date</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${pendingOrders}">
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.serviceType}"></td>
+            <td th:text="${order.pickupDatetime}"></td>
+            <td th:text="${order.deliveryDatetime}"></td>
+            <td th:text="${order.status}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h1>Completed Orders</h1>
+    <table class="order-table">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Service Type</th>
+            <th>Pickup Date</th>
+            <th>Delivery Date</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${completedOrders}">
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.serviceType}"></td>
+            <td th:text="${order.pickupDatetime}"></td>
+            <td th:text="${order.deliveryDatetime}"></td>
+            <td th:text="${order.status}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

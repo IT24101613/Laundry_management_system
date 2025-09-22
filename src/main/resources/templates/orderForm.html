@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Laundry Order Form</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<nav class="navbar">
+    <a th:href="@{/orders}">Orders</a>
+    <a th:href="@{/browse}">Browse Clothes</a>
+</nav>
+<h1>Create Laundry Order</h1>
+<form th:action="@{/order/save}" method="post">
+    <!-- Customer Details -->
+    <h2>Customer Details</h2>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required /><br/><br/>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required /><br/><br/>
+
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" required /><br/><br/>
+
+    <label for="phoneNo">Phone Number:</label>
+    <input type="text" id="phoneNo" name="phoneNo" pattern="[0-9]{10}" required /><br/><br/>
+
+    <!-- Service Type -->
+    <h2>Service Type</h2>
+    <select id="serviceType" name="serviceType" required>
+        <option value="">Select Service</option>
+        <option value="washing">Washing</option>
+        <option value="ironing">Ironing</option>
+        <option value="dry cleaning">Dry Cleaning</option>
+        <option value="folding">Folding</option>
+    </select><br/><br/>
+
+    <!-- Special Requests -->
+    <h2>Special Requests</h2>
+    <textarea id="specialRequests" name="specialRequests" rows="4" cols="50" placeholder="Enter one request per line"></textarea><br/><br/>
+
+    <!-- Pickup and Delivery -->
+    <h2>Pickup and Delivery</h2>
+    <label for="pickupDatetimeStr">Preferred Pickup Date and Time:</label>
+    <input type="datetime-local" id="pickupDatetimeStr" name="pickupDatetimeStr" required /><br/><br/>
+
+    <label for="deliveryDatetimeStr">Preferred Delivery Date and Time:</label>
+    <input type="datetime-local" id="deliveryDatetimeStr" name="deliveryDatetimeStr" required /><br/><br/>
+
+    <button type="submit">Save Order</button>
+    <a th:href="@{/cart}" class="cancel-btn">Cancel</a>
+</form>
+</body>
+</html>
