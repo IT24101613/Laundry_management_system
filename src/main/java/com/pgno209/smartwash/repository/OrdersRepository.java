@@ -35,8 +35,13 @@ public class OrdersRepository {
         return keyHolder.getKey().intValue();
     }
 
-    public List<Orders> findPending() {
-        String sql = "SELECT * FROM Orders WHERE status = 'Pending'";
+    public Orders findById(Integer orderId) {
+        String sql = "SELECT * FROM Orders WHERE order_id = ?";
+        return jdbcTemplate.queryForObject(sql, new OrderRowMapper(), orderId);
+    }
+
+    public List<Orders> findCurrent() {
+        String sql = "SELECT * FROM Orders WHERE status = 'Pending' or status = 'Paid'";
         return jdbcTemplate.query(sql, new OrderRowMapper());
     }
 
@@ -58,5 +63,15 @@ public class OrdersRepository {
             order.setStatus(rs.getString("status"));
             return order;
         }
+    }
+
+    public void update(Orders order) {
+        String sql = "UPDATE Orders SET service_type = ?, pickup_datetime = ?, delivery_datetime = ? WHERE order_id = ?";
+        jdbcTemplate.update(sql, order.getServiceType(), Timestamp.valueOf(order.getPickupDatetime()), Timestamp.valueOf(order.getDeliveryDatetime()), order.getOrderId());
+    }
+
+    public void deleteById(Integer orderId) {
+        String sql = "DELETE FROM Orders WHERE order_id = ?";
+        jdbcTemplate.update(sql, orderId);
     }
 }

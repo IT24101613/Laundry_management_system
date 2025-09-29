@@ -1,10 +1,20 @@
 package com.pgno209.smartwash.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 public class Customer {
     private Integer customerId;
+    @NotNull(message = "Name is required")
     private String name;
+    @NotNull(message = "Email is required")
+    @Email(message = "Invalid email format")
     private String email;
+    @NotNull(message = "Address is required")
     private String address;
+    @NotNull(message = "Phone Number is required")
+    @Pattern(regexp = "[0-9]{10}", message = "Phone number must be exactly 10 digits")
     private String phoneNo;
 
     // Getters and Setters

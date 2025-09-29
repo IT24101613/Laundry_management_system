@@ -1,12 +1,17 @@
 package com.pgno209.smartwash.model;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Orders {
     private Integer orderId;
     private Integer customerId;
+    @NotNull(message = "Service Type is required")
     private String serviceType;
+    @NotNull(message = "Pickup Date and Time is required")
     private LocalDateTime pickupDatetime;
+    @NotNull(message = "Delivery Date and Time is required")
     private LocalDateTime deliveryDatetime;
     private LocalDateTime orderTime;
     private String status;

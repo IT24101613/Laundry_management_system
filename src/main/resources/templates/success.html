@@ -7,7 +7,7 @@
 <body>
 <nav class="navbar">
     <a th:href="@{/orders}">Orders</a>
-    <a th:href="@{/browse}">Browse Clothes</a>
+    <a th:href="@{/browse?categoryId=1}">Browse Clothes</a>
 </nav>
 <h1>Order Saved Successfully!</h1>
 <p th:text="'Your Order ID is: ' + ${orderId}"></p>

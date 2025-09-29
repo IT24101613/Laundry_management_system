@@ -7,7 +7,7 @@
 <body>
 <nav class="navbar">
   <a th:href="@{/orders}">Orders</a>
-  <a th:href="@{/browse}">Browse Clothes</a>
+  <a th:href="@{/browse?categoryId=1}">Browse Clothes</a>
 </nav>
 <h1>Your Laundry Basket</h1>
 <table class="cart-table">
@@ -31,9 +31,9 @@
   </tbody>
 </table>
 <br><br>
-<p th:text="'Total Amount: $' + ${total}"></p>
+<h2 th:text="'Total Amount: $' + ${total}"></h2>
 <br>
-<a th:href="@{/cart/clear}" class="delete-btn">Clear Cart</a>
+<a th:href="@{/cart/clear}" class="clear-cart-btn ">Clear Cart</a>
 <a th:href="@{/order/form}" class="confirm-btn">Confirm Selection</a>
 </body>
 </html>

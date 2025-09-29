@@ -3,6 +3,14 @@
 <head>
     <title>Laundry Order Form</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <style>
+        .error {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+    </style>
 </head>
 <body>
 <nav class="navbar">
@@ -10,24 +18,27 @@
     <a th:href="@{/browse}">Browse Clothes</a>
 </nav>
 <h1>Create Laundry Order</h1>
-<form th:action="@{/order/save}" method="post">
+<div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+<form th:action="@{/order/save}" method="post" onsubmit="return validateDates()">
     <!-- Customer Details -->
     <h2>Customer Details</h2>
     <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required /><br/><br/>
+    <input type="text" id="name" th:field="*{customer.name}" required /><br/><br/>
 
     <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required /><br/><br/>
+    <input type="email" id="email" th:field="*{customer.email}" pattern=".*@.*" required />
+    <div class="error" th:if="${#fields.hasErrors('customer.email')}" th:errors="*{customer.email}"></div><br/><br/>
 
     <label for="address">Address:</label>
-    <input type="text" id="address" name="address" required /><br/><br/>
+    <input type="text" id="address" th:field="*{customer.address}" required /><br/><br/>
 
     <label for="phoneNo">Phone Number:</label>
-    <input type="text" id="phoneNo" name="phoneNo" pattern="[0-9]{10}" required /><br/><br/>
+    <input type="text" id="phoneNo" th:field="*{customer.phoneNo}" pattern="[0-9]{10}" title="Must be exactly 10 digits" required />
+    <div class="error" th:if="${#fields.hasErrors('customer.phoneNo')}" th:errors="*{customer.phoneNo}"></div><br/><br/>
 
     <!-- Service Type -->
     <h2>Service Type</h2>
-    <select id="serviceType" name="serviceType" required>
+    <select id="serviceType" th:field="*{order.serviceType}" required>
         <option value="">Select Service</option>
         <option value="washing">Washing</option>
         <option value="ironing">Ironing</option>
@@ -37,18 +48,45 @@
 
     <!-- Special Requests -->
     <h2>Special Requests</h2>
-    <textarea id="specialRequests" name="specialRequests" rows="4" cols="50" placeholder="Enter one request per line"></textarea><br/><br/>
+    <textarea id="specialRequests" name="specialRequests" rows="4" cols="50" placeholder="Enter one request per line"></textarea> <br/><br/>
 
     <!-- Pickup and Delivery -->
     <h2>Pickup and Delivery</h2>
     <label for="pickupDatetimeStr">Preferred Pickup Date and Time:</label>
-    <input type="datetime-local" id="pickupDatetimeStr" name="pickupDatetimeStr" required /><br/><br/>
+    <input type="datetime-local" id="pickupDatetimeStr" th:field="*{order.pickupDatetime}" required />
+    <div class="error" th:if="${#fields.hasErrors('order.pickupDatetime')}" th:errors="*{order.pickupDatetime}"></div><br/><br/>
 
     <label for="deliveryDatetimeStr">Preferred Delivery Date and Time:</label>
-    <input type="datetime-local" id="deliveryDatetimeStr" name="deliveryDatetimeStr" required /><br/><br/>
+    <input type="datetime-local" id="deliveryDatetimeStr" th:field="*{order.deliveryDatetime}" required />
+    <div class="error" th:if="${#fields.hasErrors('order.deliveryDatetime')}" th:errors="*{order.deliveryDatetime}"></div><br/><br/>
 
     <button type="submit">Save Order</button>
     <a th:href="@{/cart}" class="cancel-btn">Cancel</a>
 </form>
+
+<script>
+    function validateDates() {
+        const pickup = new Date(document.getElementById('pickupDatetimeStr').value);
+        const delivery = new Date(document.getElementById('deliveryDatetimeStr').value);
+        const now = new Date('2025-09-28T06:34:00+05:30'); // Current date and time
+
+        if (pickup <= now || delivery <= now) {
+            alert("Pickup and delivery dates must be greater than 06:34 AM, Sep 28, 2025.");
+            return false;
+        }
+        if (delivery <= pickup) {
+            alert("Delivery date must be greater than pickup date.");
+            return false;
+        }
+        return true;
+    }
+
+    window.onload = function() {
+        const now = new Date('2025-09-28T06:34:00+05:30');
+        const minDate = now.toISOString().slice(0, 16); // Format: yyyy-MM-ddTHH:mm
+        document.getElementById('pickupDatetimeStr').min = minDate;
+        document.getElementById('deliveryDatetimeStr').min = minDate;
+    };
+</script>
 </body>
 </html>

@@ -125,11 +125,11 @@ textarea:focus {
 button[type="submit"] {
     background-color: #3498db;
     color: #ffffff;
-    padding: 12px 20px;
+    padding: 10px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 16px;
     margin-left: 10px;
     transition: background-color 0.3s, transform 0.2s;
 }
@@ -274,6 +274,20 @@ textarea {
     color: #c0392b;
 }
 
+.clear-cart-btn {
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 8px 15px; /* Reduced padding to fit text size */
+    border-radius: 8px;
+    text-decoration: none;
+    width: fit-content; /* Adjust width to content */
+}
+
+.clear-cart-btn:hover {
+    color: #c0392b;
+}
+
+
 .confirm-btn {
     background-color: #27ae60;
     color: #ffffff;
@@ -296,8 +310,172 @@ textarea {
     border-radius: 8px;
     text-decoration: none;
     margin-right: 20px;
+    margin-left: 30px;
 }
 
 .cancel-btn:hover {
     background-color: #c0392b;
+}
+
+.order-table a {
+    text-decoration: none;
+    color: inherit; /* Inherits the text color from the parent (e.g., black or table text color) */
+}
+
+.order-table a:hover {
+    color: #3498db; /* Optional: Add a hover effect for better UX */
+}
+
+.cloth-image {
+    max-width: 100px; /* Fixed max width to fit table */
+    max-height: 100px; /* Fixed max height */
+    object-fit: cover; /* Maintain aspect ratio and cover the area */
+    border-radius: 4px; /* Optional: Rounded corners */
+    display: block; /* Ensure proper alignment */
+}
+
+.cart-table td {
+    vertical-align: middle; /* Align content vertically in cells */
+}
+
+.edit-btn, .delete-btn, .pay-btn {
+    background-color: #3498db; /* Blue for edit, overridden for delete/pay */
+    color: #ffffff;
+    padding: 8px 15px; /* Consistent with confirm-btn */
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 5px; /* Spacing between buttons */
+}
+
+.pay-btn {
+    background-color: #2ecc71; /* Green for edit */
+}
+
+.pay-btn:hover {
+    background-color: #27ae60; /* Darker green on hover */
+}
+
+.delete-btn {
+    background-color: #e74c3c; /* Red for delete */
+}
+
+.delete-btn:hover {
+    background-color: #c0392b; /* Darker red on hover */
+}
+
+.edit-btn {
+    background-color: #f1c40f; /* Yellow for pay */
+}
+
+.edit-btn:hover {
+    background-color: #f39c12; /* Darker yellow on hover */
+}
+
+/* Container for button layout */
+.button-group {
+    text-align: center; /* Center the group */
+    margin-top: 20px; /* Space from above content */
+}
+
+.button-group .edit-delete-row {
+    display: flex;
+    justify-content: center; /* Center the edit and delete buttons */
+    margin-bottom: 10px; /* Space before pay button */
+}
+
+.button-group .edit-delete-row .edit-btn,
+.button-group .edit-delete-row .delete-btn {
+    margin: 0 10px; /* Horizontal spacing between edit and delete */
+}
+
+.button-group .pay-btn {
+    display: block; /* Ensure pay button takes full width for centering */
+    margin: 0 auto; /* Center the pay button */
+}
+
+.success-message {
+    background-color: #2ecc71;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.error {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.button-container {
+    text-align: right;
+    padding: 10px;
+    margin-top: 50px;
+}
+.new-order-btn {
+    background-color: #3498db; /* Blue color */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+}
+.new-order-btn:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+.request-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+.delete-request-btn {
+    background-color: #e74c3c; /* Red color for delete */
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.delete-request-btn:hover {
+    background-color: #c0392b; /* Darker red on hover */
+}
+
+.back-to-orders-btn {
+    background-color: #3498db; /* Blue color */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+}
+.back-to-orders-btn:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+.view-basket-btn {
+    background-color: #2c3e50;
+    color: #ffffff;
+    padding: 8px 15px; /* Reduced padding to fit text size */
+    border-radius: 8px;
+    text-decoration: none;
+    display: block; /* Change to block for centering */
+    margin: 20px auto 0; /* Center horizontally, keep top margin */
+    width: fit-content; /* Adjust width to content */
+}
+
+.view-basket-btn:hover {
+    background-color: #2980b9;
 }

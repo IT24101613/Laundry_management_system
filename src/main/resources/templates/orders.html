@@ -7,9 +7,14 @@
 <body>
 <nav class="navbar">
     <a th:href="@{/orders}">Orders</a>
-    <a th:href="@{/browse}">Browse Clothes</a>
+    <a th:href="@{/browse?categoryId=1}">Browse Clothes</a>
 </nav>
+<div class="button-container">
+    <a th:href="@{/browse?categoryId=1}" class="new-order-btn">New Order</a>
+</div>
+
 <div class="main-content">
+    <div th:if="${message}" class="success-message" th:text="${message}"></div>
     <h1>Current Orders</h1>
     <table class="order-table">
         <thead>
@@ -22,15 +27,15 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="order : ${pendingOrders}">
-            <td th:text="${order.orderId}"></td>
+        <tr th:each="order : ${currentOrders}">
+            <td><a th:href="@{/order/details/{id}(id=${order.orderId})}" th:text="${order.orderId}" style="text-decoration: none;"></a></td>
             <td th:text="${order.serviceType}"></td>
             <td th:text="${order.pickupDatetime}"></td>
             <td th:text="${order.deliveryDatetime}"></td>
             <td th:text="${order.status}"></td>
         </tr>
         </tbody>
-    </table>
+    </table> </br></br>
 
     <h1>Completed Orders</h1>
     <table class="order-table">
@@ -45,7 +50,7 @@
         </thead>
         <tbody>
         <tr th:each="order : ${completedOrders}">
-            <td th:text="${order.orderId}"></td>
+            <td><a th:href="@{/order/details/{id}(id=${order.orderId})}" th:text="${order.orderId}" style="text-decoration: none;"></a></td>
             <td th:text="${order.serviceType}"></td>
             <td th:text="${order.pickupDatetime}"></td>
             <td th:text="${order.deliveryDatetime}"></td>
