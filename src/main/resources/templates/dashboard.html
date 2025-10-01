@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payment Dashboard</title>
+    <style>
+        body {
+            background-color: #0a1f44;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background-color: #1e3a8a;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #3b82f6;
+        }
+        th {
+            background-color: #2563eb;
+        }
+        tr:hover {
+            background-color: #334155;
+        }
+        .status {
+            font-weight: bold;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .button-group form button,
+        .button-group button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button-group form button:hover,
+        .button-group button:hover {
+            background-color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Payment Dashboard</h2>
+    <div style="background-color:#1e3a8a; padding:30px; border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,0.3); max-width:700px; margin:auto;">
+        <table>
+            <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Amount</th>
+                <th>Payment ID</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td th:text="${payment.orderId}"></td>
+                <td th:text="'LKR ' + ${payment.amount}"></td>
+                <td th:text="${payment.paymentId}"></td>
+                <td th:text="${payment.paymentStatus}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="button-group">
+            <!-- Pay with Card -->
+            <form th:action="@{/payments/card}" method="get">
+                <input type="hidden" name="orderId" th:value="${payment.orderId}" />
+                <input type="hidden" name="amount" th:value="${payment.amount}" />
+                <button type="submit" style="background-color:#2563eb;">Pay with Card</button>
+            </form>
+
+            <!-- Cash on Delivery -->
+            <form th:action="@{/payments/cod}" method="get">
+                <input type="hidden" name="orderId" th:value="${payment.orderId}" />
+                <input type="hidden" name="amount" th:value="${payment.amount}" />
+                <button type="submit" style="background-color:#10b981;">Cash on Delivery</button>
+            </form>
+
+            <!-- Cancel Payment Trigger -->
+            <button type="button"
+                    onclick="document.getElementById('cancelModal').style.display='block'"
+                    style="background-color:#ef4444;">
+                Cancel Payment
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div id="cancelModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:1000;">
+    <div style="background-color:#1e3a8a; margin:10% auto; padding:20px; width:400px; border-radius:10px; text-align:center; color:white;">
+        <h3>Are you sure you want to cancel?</h3>
+        <p>This action cannot be undone.</p>
+
+        <!-- Yes: Cancel Payment -->
+        <form id="cancelForm" action="/payments/cancel" method="post" style="display: none;">
+            <input type="hidden" name="orderId" th:value="${payment.orderId}" />
+            <input type="hidden" name="amount" th:value="${payment.amount}" />
+        </form>
+
+        <button onclick="document.getElementById('cancelForm').submit(); document.getElementById('cancelModal').style.display='none';"
+                style="background-color:#ef4444; color:white; padding:10px 20px; border:none; border-radius:6px;">
+            Yes, Cancel Payment
+        </button>
+
+        <!-- No: Proceed with Payment -->
+        <button onclick="document.getElementById('cancelModal').style.display='none'"
+                style="background-color:#10b981; color:white; padding:10px 20px; border:none; border-radius:6px;">
+            No, Proceed with Payment
+        </button>
+    </div>
+</div>
+
+</body>
+</html>

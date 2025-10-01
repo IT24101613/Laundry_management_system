@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>OTP Verification</title>
+    <style>
+        body {
+            background-color: #0a1f44;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h2>Enter OTP</h2>
+
+<form th:action="@{/payments/pay/card/otp}" method="post">
+    <input type="hidden" name="orderId" th:value="${orderId}" />
+    <input type="hidden" name="amount" th:value="${amount}" /> <!-- ✅ Fixed -->
+    <input type="text" name="otp" placeholder="Enter OTP" required />
+    <button type="submit">Verify & Pay</button>
+</form>
+
+</body>
+</html>
