@@ -201,7 +201,7 @@ textarea {
     top: 60px;
     right: 20px;
     font-size: 1.5rem;
-    color: #3498db;
+    color: #34495e;
     text-decoration: none;
 }
 
@@ -369,11 +369,11 @@ textarea {
 }
 
 .edit-btn {
-    background-color: #f1c40f; /* Yellow for pay */
+    background-color: #3498db
 }
 
 .edit-btn:hover {
-    background-color: #f39c12; /* Darker yellow on hover */
+    background-color: #2980b9
 }
 
 /* Container for button layout */
