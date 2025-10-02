@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Orders - FreshFold Laundry</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <style>
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .order-header h3 {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--light-text);
+        }
+
+        .order-details div {
+            padding: 5px 0;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            padding: 10px 0;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+            text-align: center;
+        }
+
+        .progress-step i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .progress-step span {
+            font-size: 0.75rem;
+            color: var(--light-text);
+            white-space: nowrap;
+        }
+
+        .progress-step.completed i {
+            color: var(--success-color);
+        }
+
+        .progress-step.active i {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .progress-step.completed span,
+        .progress-step.active span {
+            color: var(--dark-text);
+            font-weight: 600;
+        }
+
+        .progress-connector {
+            flex-grow: 1;
+            height: 4px;
+            background: var(--border-color);
+            position: relative;
+            top: -12px;
+        }
+
+        .progress-connector.completed {
+            background: var(--success-color);
+        }
+
+        .driver-info {
+            font-size: 0.85rem;
+            color: var(--dark-text);
+            margin-top: 5px;
+        }
+
+        .estimated-delivery {
+            background: #e8f0fe;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .order-details {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-container {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .progress-step {
+                width: 80px;
+                margin-bottom: 10px;
+            }
+
+            .progress-connector {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <span>🧺</span>
+                <h1>FreshFold Laundry</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/schedule}">Schedule Pickup</a></li>
+                    <li><a th:href="@{/track}" class="active">Track Order</a></li>
+                    <li><a th:href="@{/coordinator}">Coordinator</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div class="card">
+        <h2>Track Your Orders</h2>
+        <p>Check the status of your laundry orders in real-time.</p>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="alert alert-warning">
+        No orders found
+    </div>
+
+    <div th:unless="${#lists.isEmpty(orders)}" th:each="order : ${orders}">
+        <div class="order-card">
+            <div class="order-header">
+                <h3>Order #<span th:text="${order.id}"></span></h3>
+                <span class="btn btn-primary btn-sm" th:text="${order.status}"></span>
+            </div>
+            <div class="order-details">
+                <div>Customer: <span th:text="${order.customerName} ?: 'N/A'"></span></div>
+                <div>Contact: <span th:text="${order.customerPhone} ?: 'N/A'"></span></div>
+                <div>Pickup Address: <span th:text="${order.customerAddress} ?: 'N/A'"></span></div>
+                <div>Driver: <span th:text="${order.pickupDriver != null ? order.pickupDriver.name : 'Not Assigned'}"></span></div>
+                <div>Delivery Driver: <span th:text="${order.deliveryDriver != null ? order.deliveryDriver.name : 'Not Assigned'}"></span></div>
+                <div>Placed on: <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd')}"></span></span></div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-step" th:classappend="${(order.status eq 'PICKED_UP' or order.status eq 'IN_PROGRESS' or order.status eq 'READY' or order.status eq 'DELIVERY_ASSIGNED' or order.status eq 'OUT_FOR_DELIVERY' or order.status eq 'DELIVERED') ? 'completed' : (order.status eq 'PICKUP_ASSIGNED' ? 'active' : '')}">
+                    <i>🛒</i>
+                    <span>Picked Up</span>
+                    <div th:if="${order.pickupDriver != null and (order.status eq 'PICKED_UP' or order.status eq 'IN_PROGRESS' or order.status eq 'READY' or order.status eq 'DELIVERY_ASSIGNED' or order.status eq 'OUT_FOR_DELIVERY' or order.status eq 'DELIVERED')}" class="driver-info">
+                        Driver: <span th:text="${order.pickupDriver.name}"></span>
+                    </div>
+                </div>
+                <div class="progress-connector" th:classappend="${(order.status eq 'IN_PROGRESS' or order.status eq 'READY' or order.status eq 'DELIVERY_ASSIGNED' or order.status eq 'OUT_FOR_DELIVERY' or order.status eq 'DELIVERED') ? 'completed' : ''}"></div>
+                <div class="progress-step" th:classappend="${(order.status eq 'IN_PROGRESS' or order.status eq 'READY' or order.status eq 'DELIVERY_ASSIGNED' or order.status eq 'OUT_FOR_DELIVERY' or order.status eq 'DELIVERED') ? 'completed' : (order.status eq 'IN_PROGRESS' ? 'active' : '')}">
+                    <i>🧼</i>
+                    <span>In Progress</span>
+                </div>
+                <div class="progress-connector" th:classappend="${(order.status eq 'READY' or order.status eq 'DELIVERY_ASSIGNED' or order.status eq 'OUT_FOR_DELIVERY' or order.status eq 'DELIVERED') ? 'completed' : ''}"></div>
+                <div class="progress-step" th:classappend="${(order.status eq 'READY' or order.status eq 'DELIVERY_ASSIGNED' or order.status eq 'OUT_FOR_DELIVERY' or order.status eq 'DELIVERED') ? 'completed' : (order.status eq 'READY' ? 'active' : '')}">
+                    <i>✔️</i>
+                    <span>Ready</span>
+                </div>
+                <div class="progress-connector" th:classappend="${(order.status eq 'DELIVERY_ASSIGNED' or order.status eq 'OUT_FOR_DELIVERY' or order.status eq 'DELIVERED') ? 'completed' : ''}"></div>
+                <div class="progress-step" th:classappend="${(order.status eq 'OUT_FOR_DELIVERY' or order.status eq 'DELIVERED') ? 'completed' : (order.status eq 'OUT_FOR_DELIVERY' ? 'active' : '')}">
+                    <i>🚚</i>
+                    <span>Out for Delivery</span>
+                </div>
+                <div class="progress-connector" th:classappend="${order.status eq 'DELIVERED' ? 'completed' : ''}"></div>
+                <div class="progress-step" th:classappend="${order.status eq 'DELIVERED' ? 'completed active' : ''}">
+                    <i>🏠</i>
+                    <span>Delivered</span>
+                    <div th:if="${order.deliveryDriver != null and order.status eq 'DELIVERED'}" class="driver-info">
+                        Driver: <span th:text="${order.deliveryDriver.name}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="estimated-delivery">
+                Estimated Delivery: <span th:text="${#temporals.format(order.deliveryDate, 'yyyy-MM-dd')}"></span> at 22:00
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 FreshFold Laundry Management System. All rights reserved.</p>
+    </div>
+</footer>
+</body>
+</html>

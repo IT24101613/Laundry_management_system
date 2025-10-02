@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Coordinator Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+</head>
+<body>
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <span>🧺</span>
+                <h1>FreshFold Laundry</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/schedule}">Schedule Pickup</a></li>
+                    <li><a th:href="@{/track}">Track Order</a></li>
+                    <li><a th:href="@{/coordinator}" class="active">Coordinator</a></li>
+                    <li><a th:href="@{/driver(driverId=1)}">Driver</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div class="card">
+        <h2>Coordinator Dashboard</h2>
+        <p>Manage orders, assign drivers, and update statuses</p>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="alert alert-warning">
+        No orders found
+    </div>
+
+    <div th:unless="${#lists.isEmpty(orders)}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Pickup Driver</th>
+                <th>Delivery Driver</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${order.customerName}"></td>
+                <td>
+                    <span class="status-badge" th:classappend="'status-' + ${order.status}" th:text="${#strings.replace(order.status, '_', ' ')}"></span>
+                </td>
+                <td th:text="${order.pickupDriver != null ? order.pickupDriver.name : 'Not Assigned'}"></td>
+                <td th:text="${order.deliveryDriver != null ? order.deliveryDriver.name : 'Not Assigned'}"></td>
+                <td>
+                    <!-- Assign Pickup Driver -->
+                    <form th:if="${order.status == 'PENDING'}" th:action="@{/assignPickupDriver/{orderId}(orderId=${order.id})}" method="post" style="display: inline;">
+                        <select name="driverId">
+                            <option th:each="driver : ${drivers}" th:value="${driver.id}" th:text="${driver.name}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Assign Pickup Driver</button>
+                    </form>
+
+                    <!-- Mark as In Progress -->
+                    <form th:if="${order.status == 'PICKED_UP'}" th:action="@{/updateStatus/{id}(id=${order.id})}" method="post" style="display: inline;">
+                        <input type="hidden" name="status" value="IN_PROGRESS"/>
+                        <button type="submit" class="btn btn-warning btn-sm">Mark as In Progress</button>
+                    </form>
+
+                    <!-- Mark as Ready -->
+                    <form th:if="${order.status == 'IN_PROGRESS'}" th:action="@{/updateStatus/{id}(id=${order.id})}" method="post" style="display: inline;">
+                        <input type="hidden" name="status" value="READY"/>
+                        <button type="submit" class="btn btn-success btn-sm">Mark as Ready</button>
+                    </form>
+
+                    <!-- Assign Delivery Driver -->
+                    <form th:if="${order.status == 'READY'}" th:action="@{/assignDeliveryDriver/{orderId}(orderId=${order.id})}" method="post" style="display: inline;">
+                        <select name="driverId">
+                            <option th:each="driver : ${drivers}" th:value="${driver.id}" th:text="${driver.name}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Assign Delivery Driver</button>
+                    </form>
+
+                    <!-- Mark as Out for Delivery -->
+                    <form th:if="${order.status == 'DELIVERY_ASSIGNED'}" th:action="@{/updateStatus/{id}(id=${order.id})}" method="post" style="display: inline;">
+                        <input type="hidden" name="status" value="OUT_FOR_DELIVERY"/>
+                        <button type="submit" class="btn btn-warning btn-sm">Mark as Out for Delivery</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 FreshFold Laundry Management System. All rights reserved.</p>
+    </div>
+</footer>
+</body>
+</html>
