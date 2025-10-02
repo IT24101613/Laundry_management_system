@@ -21,7 +21,6 @@ public class PaymentRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // ✅ Save a new payment record
     public int save(Payment payment) {
         String sql = "INSERT INTO payment (order_id, payment_method, payment_status, amount, payment_datetime) VALUES (?, ?, ?, ?, ?)";
         return jdbcTemplate.update(sql,
@@ -33,33 +32,28 @@ public class PaymentRepository {
         );
     }
 
-    // ✅ Fetch all payments
     public List<Payment> findAll() {
         String sql = "SELECT * FROM payment";
         return jdbcTemplate.query(sql, mapRow());
     }
 
-    // ✅ Fetch payment by order ID (first match)
     public Optional<Payment> findByOrderId(int orderId) {
         String sql = "SELECT * FROM payment WHERE order_id = ?";
         List<Payment> result = jdbcTemplate.query(sql, mapRow(), orderId);
         return result.stream().findFirst();
     }
 
-    // ✅ Fetch latest payment by order ID (most recent)
     public Optional<Payment> findLatestByOrderId(int orderId) {
         String sql = "SELECT * FROM payment WHERE order_id = ? ORDER BY payment_datetime DESC LIMIT 1";
         List<Payment> result = jdbcTemplate.query(sql, mapRow(), orderId);
         return result.stream().findFirst();
     }
 
-    // ✅ Update payment status, method, and timestamp
     public int updateStatus(int orderId, String status, String method) {
         String sql = "UPDATE payment SET payment_status = ?, payment_method = ?, payment_datetime = ? WHERE order_id = ?";
         return jdbcTemplate.update(sql, status, method, Timestamp.valueOf(LocalDateTime.now()), orderId);
     }
 
-    // ✅ RowMapper for converting DB rows to Payment objects
     private RowMapper<Payment> mapRow() {
         return (ResultSet rs, int rowNum) -> {
             Payment p = new Payment();

@@ -25,7 +25,6 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    // ✅ Manual form submission
     @GetMapping("/form")
     public String showForm(Model model) {
         model.addAttribute("paymentDto", new PaymentDto());
@@ -54,7 +53,6 @@ public class PaymentController {
         return "payment-list";
     }
 
-    // ✅ Card Payment Flow
     @GetMapping("/card")
     public String showCardPaymentPage(@RequestParam int orderId,
                                       @RequestParam BigDecimal amount,
@@ -84,7 +82,6 @@ public class PaymentController {
                             @RequestParam BigDecimal amount,
                             RedirectAttributes redirectAttributes) {
 
-        // ✅ Record payment as Paid using Card
         paymentService.recordPayment(orderId, amount, "Card", "Paid");
 
         redirectAttributes.addAttribute("orderId", orderId);
@@ -114,7 +111,6 @@ public class PaymentController {
                 .body(receipt);
     }
 
-    // ✅ COD Flow
     @GetMapping("/cod")
     public String showCODPage(@RequestParam int orderId,
                               @RequestParam BigDecimal amount,
@@ -129,14 +125,12 @@ public class PaymentController {
                              @RequestParam BigDecimal amount,
                              RedirectAttributes redirectAttributes) {
 
-        // ✅ Record payment as Pending using COD
         paymentService.recordPayment(orderId, amount, "CashOnDelivery", "Pending");
 
         redirectAttributes.addAttribute("orderId", orderId);
         return "redirect:/payments/receipt";
     }
 
-    // ✅ Dashboard
     @GetMapping("/dashboard")
     public String showDashboard(@RequestParam(required = false) Integer orderId, Model model) {
         Payment payment;
@@ -155,7 +149,6 @@ public class PaymentController {
         return "dashboard";
     }
 
-    // ✅ Cancel Payment
     @PostMapping("/cancel")
     public String cancelPayment(@RequestParam int orderId,
                                 @RequestParam BigDecimal amount,

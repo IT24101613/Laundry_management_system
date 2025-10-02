@@ -85,21 +85,19 @@
         </table>
 
         <div class="button-group">
-            <!-- Pay with Card -->
+
             <form th:action="@{/payments/card}" method="get">
                 <input type="hidden" name="orderId" th:value="${payment.orderId}" />
                 <input type="hidden" name="amount" th:value="${payment.amount}" />
                 <button type="submit" style="background-color:#2563eb;">Pay with Card</button>
             </form>
 
-            <!-- Cash on Delivery -->
             <form th:action="@{/payments/cod}" method="get">
                 <input type="hidden" name="orderId" th:value="${payment.orderId}" />
                 <input type="hidden" name="amount" th:value="${payment.amount}" />
                 <button type="submit" style="background-color:#10b981;">Cash on Delivery</button>
             </form>
 
-            <!-- Cancel Payment Trigger -->
             <button type="button"
                     onclick="document.getElementById('cancelModal').style.display='block'"
                     style="background-color:#ef4444;">
@@ -109,13 +107,11 @@
     </div>
 </div>
 
-<!-- Cancel Confirmation Modal -->
 <div id="cancelModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:1000;">
     <div style="background-color:#1e3a8a; margin:10% auto; padding:20px; width:400px; border-radius:10px; text-align:center; color:white;">
         <h3>Are you sure you want to cancel?</h3>
         <p>This action cannot be undone.</p>
 
-        <!-- Yes: Cancel Payment -->
         <form id="cancelForm" action="/payments/cancel" method="post" style="display: none;">
             <input type="hidden" name="orderId" th:value="${payment.orderId}" />
             <input type="hidden" name="amount" th:value="${payment.amount}" />
@@ -126,7 +122,6 @@
             Yes, Cancel Payment
         </button>
 
-        <!-- No: Proceed with Payment -->
         <button onclick="document.getElementById('cancelModal').style.display='none'"
                 style="background-color:#10b981; color:white; padding:10px 20px; border:none; border-radius:6px;">
             No, Proceed with Payment
