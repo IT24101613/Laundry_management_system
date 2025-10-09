@@ -21,6 +21,8 @@ public class OrderService {
     @Autowired
     private DriverService driverService;
 
+    // function for saving a new order to validate availability
+
     public Order saveOrder(Order order) {
         if (!isTimeSlotAvailable(order.getPickupDate(), order.getPickupTime(), "pickup")) {
             throw new IllegalArgumentException("Selected pickup time slot is not available. Please choose another time.");
@@ -49,6 +51,7 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    // function to get all available time slots for a given date and type
     public boolean isTimeSlotAvailable(LocalDate date, LocalTime time, String type) {
         List<Order> orders;
         if ("pickup".equals(type)) {

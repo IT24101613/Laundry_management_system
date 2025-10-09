@@ -2,8 +2,506 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Driver Dashboard</title>
+    <title>Driver Dashboard - FreshFold Laundry</title>
     <link rel="stylesheet" th:href="@{/css/common.css}">
+    <style>
+        /* Enhanced Table Styles */
+        .table-wrapper {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 0;
+        }
+
+        .table th {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            border: none;
+            padding: 18px 20px;
+            text-align: left;
+        }
+
+        .table thead th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .table thead th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .table tbody tr {
+            background: white;
+            transition: all 0.3s;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table tbody tr:nth-child(even) {
+            background: rgba(25, 118, 210, 0.03);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(25, 118, 210, 0.08);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+        }
+
+        .table td {
+            padding: 16px 20px;
+            color: #333;
+            font-weight: 500;
+            border: none;
+        }
+
+        .table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 12px;
+        }
+
+        .table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 12px;
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        /* Enhanced status badges */
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        /* Action buttons */
+        .table .btn {
+            margin: 2px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .table .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Driver info header */
+        .driver-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .driver-avatar {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 15px;
+        }
+
+        .driver-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .driver-stat {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Order type badges */
+        .order-type {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .order-type.pickup {
+            background: rgba(255, 152, 0, 0.15);
+            color: #f57c00;
+            border: 1px solid #f57c00;
+        }
+
+        .order-type.delivery {
+            background: rgba(124, 77, 255, 0.15);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        /* Status-specific row accents */
+        .table tbody tr.status-pickup_assigned,
+        .table tbody tr.status-pickupassigned {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .table tbody tr.status-picked_up,
+        .table tbody tr.status-pickedup {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .table tbody tr.status-out_for_delivery,
+        .table tbody tr.status-outfordelivery {
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .table tbody tr.status-delivered {
+            border-left: 4px solid #388e3c;
+        }
+
+        /* Enhanced tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 30px;
+            background: var(--light-bg);
+            padding: 10px;
+            border-radius: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            background: white;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab a {
+            color: var(--light-text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: block;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+
+        .tab.active a {
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(25, 118, 210, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Message System Styles for Driver */
+        .messages-overview {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .messages-overview .alert {
+            flex: 1;
+            margin: 0;
+        }
+
+        .message-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .message-card.message-URGENT {
+            border-left-color: var(--danger-color);
+            background: rgba(244, 67, 54, 0.05);
+        }
+
+        .message-card.message-ISSUE {
+            border-left-color: var(--warning-color);
+            background: rgba(255, 152, 0, 0.05);
+        }
+
+        .message-card.message-INFO {
+            border-left-color: var(--primary-color);
+            background: rgba(25, 118, 210, 0.05);
+        }
+
+        .message-card.message-DRIVER_MESSAGE {
+            border-left-color: var(--accent-color);
+            background: rgba(124, 77, 255, 0.05);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .message-sender {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-type {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .message-card.message-URGENT .message-type {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .message-card.message-ISSUE .message-type {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .message-card.message-INFO .message-type {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .message-card.message-DRIVER_MESSAGE .message-type {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .message-time {
+            color: var(--light-text);
+            font-size: 0.8rem;
+        }
+
+        .message-content {
+            margin-bottom: 15px;
+            line-height: 1.4;
+            font-size: 0.95rem;
+        }
+
+        .message-order {
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+            padding: 8px 12px;
+            background: rgba(25, 118, 210, 0.1);
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* Replies Section */
+        .replies-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+            border-left: 3px solid var(--border-color);
+        }
+
+        .replies-header {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+
+        .reply-card {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 3px solid var(--success-color);
+        }
+
+        .reply-card.reply-COORDINATOR_REPLY {
+            border-left-color: var(--primary-color);
+            background: rgba(25, 118, 210, 0.05);
+        }
+
+        .reply-card.reply-DRIVER_REPLY {
+            border-left-color: var(--accent-color);
+            background: rgba(124, 77, 255, 0.05);
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+        }
+
+        .reply-time {
+            color: var(--light-text);
+            font-size: 0.75rem;
+        }
+
+        .reply-content {
+            font-size: 0.9rem;
+            line-height: 1.3;
+        }
+
+        /* Reply Form */
+        .reply-form-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .reply-form-section .form-inline {
+            margin: 0;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .badge-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .badge-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .badge-info {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Form Styles */
+        .form-inline {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .form-inline .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .table-wrapper {
+                padding: 15px;
+            }
+
+            .table th, .table td {
+                padding: 12px 8px;
+                font-size: 0.85rem;
+            }
+
+            .driver-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                min-width: auto;
+            }
+
+            .messages-overview {
+                flex-direction: column;
+            }
+
+            .message-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .message-meta {
+                margin-top: 5px;
+            }
+
+            .form-inline {
+                flex-direction: column;
+            }
+
+            .form-inline .form-group {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
 <header class="header">
@@ -25,11 +523,28 @@
         </div>
     </div>
 </header>
-
+<br>
+<br>
 <main class="container">
-    <div class="card">
-        <h2>Driver Dashboard</h2>
-        <p>Select a driver to view their assigned orders and update statuses</p>
+    <div class="driver-header">
+        <div class="driver-avatar">🚚</div>
+        <h2 th:text="${driver.name + '''s Dashboard'}">Driver Dashboard</h2>
+        <p>Manage your assigned pickup and delivery orders</p>
+
+        <div class="driver-stats">
+            <div class="driver-stat">
+                <div class="stat-number" th:text="${#lists.size(orders)}">0</div>
+                <div class="stat-label">Total Assigned</div>
+            </div>
+            <div class="driver-stat">
+                <div class="stat-number" th:text="${pendingActionsCount}">0</div>
+                <div class="stat-label">Pending Actions</div>
+            </div>
+            <div class="driver-stat">
+                <div class="stat-number" th:text="${completedCount}">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
     </div>
 
     <!-- Driver Tabs -->
@@ -40,46 +555,157 @@
     </div>
 
     <div th:if="${#lists.isEmpty(orders)}" class="alert alert-warning">
-        No assigned orders for <span th:text="${driver.name}"></span>
+        <strong>No assigned orders</strong> for <span th:text="${driver.name}"></span>. Check back later for new assignments.
     </div>
 
     <div th:unless="${#lists.isEmpty(orders)}">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Customer</th>
-                <th>Status</th>
-                <th>Type</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="order : ${orders}">
-                <td th:text="${order.id}"></td>
-                <td th:text="${order.customerName}"></td>
-                <td>
-                    <span class="status-badge" th:classappend="'status-' + ${order.status}" th:text="${#strings.replace(order.status, '_', ' ')}"></span>
-                </td>
-                <td th:text="${order.pickupDriver != null and order.pickupDriver.id == driver.id ? 'Pickup' : 'Delivery'}"></td>
-                <td>
-                    <!-- Mark Picked Up (with null check) -->
-                    <form th:if="${order.pickupDriver != null and order.pickupDriver.id == driver.id and order.status == 'PICKUP_ASSIGNED'}" th:action="@{/driver/updateStatus/{id}(id=${order.id})}" method="post" style="display: inline;">
-                        <input type="hidden" name="status" value="PICKED_UP"/>
-                        <input type="hidden" name="driverId" th:value="${driver.id}"/>
-                        <button type="submit" class="btn btn-success btn-sm">Mark as Picked Up</button>
-                    </form>
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}" th:classappend="'status-' + ${order.status}">
+                    <td th:text="${order.id}"></td>
+                    <td>
+                        <strong th:text="${order.customerName}"></strong>
+                        <div style="font-size: 0.8rem; color: var(--light-text);" th:text="${order.customerPhone}"></div>
+                        <div style="font-size: 0.75rem; color: var(--light-text); margin-top: 3px;" th:text="${order.customerAddress}"></div>
+                    </td>
+                    <td>
+                        <span th:if="${order.pickupDriver != null and order.pickupDriver.id == driver.id}" class="order-type pickup">Pickup</span>
+                        <span th:if="${order.deliveryDriver != null and order.deliveryDriver.id == driver.id}" class="order-type delivery">Delivery</span>
+                    </td>
+                    <td>
+                        <span class="status-badge" th:classappend="'status-' + ${order.status}" th:text="${#strings.replace(order.status, '_', ' ')}"></span>
+                    </td>
+                    <td>
+                        <!-- Mark Picked Up (with null check) -->
+                        <form th:if="${order.pickupDriver != null and order.pickupDriver.id == driver.id and order.status == 'PICKUP_ASSIGNED'}" th:action="@{/driver/updateStatus/{id}(id=${order.id})}" method="post" style="display: inline;">
+                            <input type="hidden" name="status" value="PICKED_UP"/>
+                            <input type="hidden" name="driverId" th:value="${driver.id}"/>
+                            <button type="submit" class="btn btn-success btn-sm">✅ Mark Picked Up</button>
+                        </form>
 
-                    <!-- Mark Delivered (with null check) -->
-                    <form th:if="${order.deliveryDriver != null and order.deliveryDriver.id == driver.id and order.status == 'OUT_FOR_DELIVERY'}" th:action="@{/driver/updateStatus/{id}(id=${order.id})}" method="post" style="display: inline;">
-                        <input type="hidden" name="status" value="DELIVERED"/>
-                        <input type="hidden" name="driverId" th:value="${driver.id}"/>
-                        <button type="submit" class="btn btn-success btn-sm">Mark as Delivered</button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                        <!-- Mark Delivered (with null check) -->
+                        <form th:if="${order.deliveryDriver != null and order.deliveryDriver.id == driver.id and order.status == 'OUT_FOR_DELIVERY'}" th:action="@{/driver/updateStatus/{id}(id=${order.id})}" method="post" style="display: inline;">
+                            <input type="hidden" name="status" value="DELIVERED"/>
+                            <input type="hidden" name="driverId" th:value="${driver.id}"/>
+                            <button type="submit" class="btn btn-success btn-sm">🏠 Mark Delivered</button>
+                        </form>
+
+                        <div th:if="${(order.pickupDriver != null and order.pickupDriver.id == driver.id and order.status != 'PICKUP_ASSIGNED') or (order.deliveryDriver != null and order.deliveryDriver.id == driver.id and order.status != 'OUT_FOR_DELIVERY')}" style="color: var(--light-text); font-size: 0.85rem;">
+                            Awaiting next step
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Messages Section for Driver -->
+    <div class="card" style="margin-bottom: 30px;">
+        <h3>💬 Messages & Communications</h3>
+
+        <!-- Send New Message to Coordinator -->
+        <div class="form-section" style="margin-bottom: 20px;">
+            <h4>Send New Message to Coordinator</h4>
+            <form th:action="@{/driver/sendMessageToCoordinator}" method="post" class="form-inline">
+                <input type="hidden" name="driverId" th:value="${driver.id}">
+                <div class="form-group" style="flex-grow: 1;">
+                    <label>Message:</label>
+                    <input type="text" name="messageContent" class="form-control"
+                           placeholder="Describe any issues, ask questions, or provide updates..." required>
+                </div>
+                <div class="form-group">
+                    <label>Related Order (Optional):</label>
+                    <select name="orderId" class="form-control">
+                        <option value="">No Specific Order</option>
+                        <option th:each="order : ${orders}" th:value="${order.id}"
+                                th:text="'Order #' + ${order.id} + ' - ' + ${order.customerName}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Send to Coordinator</button>
+            </form>
+        </div>
+
+        <!-- Messages Overview -->
+        <div class="messages-overview">
+            <div th:if="${unreadMessageCount > 0}" class="alert alert-warning" style="flex: 1;">
+                <strong>📬 <span th:text="${unreadMessageCount}"></span> Unread Messages</strong>
+            </div>
+            <div class="alert alert-info" style="flex: 1;">
+                <strong>💬 <span th:text="${#lists.size(activeMessages)}"></span> Active Conversations</strong>
+            </div>
+        </div>
+
+        <!-- Active Messages List -->
+        <div th:if="${not #lists.isEmpty(activeMessages)}">
+            <h4>Your Messages & Conversations</h4>
+            <div class="messages-list">
+                <div th:each="message : ${activeMessages}" class="message-card" th:classappend="'message-' + ${message.messageType}">
+                    <div class="message-header">
+                        <div class="message-sender">
+                            <strong>From Coordinator</strong>
+                            <span class="message-type" th:text="${message.messageType}"></span>
+                        </div>
+                        <div class="message-meta">
+                            <span class="message-time" th:text="${#temporals.format(message.createdAt, 'MM/dd HH:mm')}"></span>
+                            <span th:if="${message.status == 'UNREAD'}" class="message-status badge badge-warning">NEW</span>
+                            <span th:if="${message.status == 'REPLIED'}" class="message-status badge badge-success">REPLIED</span>
+                        </div>
+                    </div>
+
+                    <div class="message-content" th:text="${message.content}"></div>
+
+                    <div th:if="${message.order != null}" class="message-order">
+                        Related to: Order #<span th:text="${message.order.id}"></span> - <span th:text="${message.order.customerName}"></span>
+                    </div>
+
+                    <!-- Replies Section - FIXED: Properly display replies -->
+                    <div th:if="${not #lists.isEmpty(@messageService.getRepliesForMessage(message.id))}" class="replies-section">
+                        <div class="replies-header">Conversation:</div>
+                        <div th:each="reply : ${@messageService.getRepliesForMessage(message.id)}" class="reply-card" th:classappend="'reply-' + ${reply.messageType}">
+                            <div class="reply-header">
+                                <strong th:text="${reply.messageType == 'DRIVER_REPLY' ? 'You' : 'Coordinator'}"></strong>
+                                <span class="reply-time" th:text="${#temporals.format(reply.createdAt, 'MM/dd HH:mm')}"></span>
+                            </div>
+                            <div class="reply-content" th:text="${reply.content}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Reply Form for Driver -->
+                    <div class="reply-form-section">
+                        <form th:action="@{/driver/replyToMessage/{id}(id=${message.id})}" method="post" class="form-inline">
+                            <input type="hidden" name="driverId" th:value="${driver.id}">
+                            <div class="form-group" style="flex-grow: 1;">
+                                <input type="text" name="replyContent" class="form-control"
+                                       placeholder="Type your reply to coordinator..." required>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm">Send Reply</button>
+                        </form>
+                    </div>
+
+                    <div class="message-actions">
+                        <form th:if="${message.status == 'UNREAD'}" th:action="@{/driver/markMessageAsRead/{id}(id=${message.id})}" method="post" style="display: inline;">
+                            <input type="hidden" name="driverId" th:value="${driver.id}">
+                            <button type="submit" class="btn btn-info btn-sm">Mark as Read</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(activeMessages)}" class="alert alert-info">
+            <strong>No active messages.</strong> You don't have any messages from the coordinator yet.
+        </div>
     </div>
 </main>
 

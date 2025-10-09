@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class OrderController {
@@ -35,8 +36,28 @@ public class OrderController {
     }
 
     @GetMapping("/track")
-    public String trackOrders(Model model) {
-        List<Order> orders = orderService.getAllOrders();
+    public String trackOrders(
+            @RequestParam(required = false) Long orderId,
+            @RequestParam(required = false) String customerName,
+            Model model) {
+
+        List<Order> orders;
+
+        if (orderId != null) {
+            // Search by order ID
+            Order order = orderService.getOrderById(orderId);
+            orders = order != null ? List.of(order) : List.of();
+        } else if (customerName != null && !customerName.trim().isEmpty()) {
+            // Search by customer name (case-insensitive)
+            orders = orderService.getAllOrders().stream()
+                    .filter(order -> order.getCustomerName() != null &&
+                            order.getCustomerName().toLowerCase().contains(customerName.toLowerCase()))
+                    .collect(Collectors.toList());
+        } else {
+            // Show all orders
+            orders = orderService.getAllOrders();
+        }
+
         model.addAttribute("orders", orders);
         return "track";
     }

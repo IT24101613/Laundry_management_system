@@ -19,6 +19,9 @@ public class Driver {
     @OneToMany(mappedBy = "deliveryDriver")
     private List<Order> deliveryOrders;
 
+    @OneToMany(mappedBy = "driver")
+    private List<Message> messages;
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -30,4 +33,6 @@ public class Driver {
     public void setPickupOrders(List<Order> pickupOrders) { this.pickupOrders = pickupOrders; }
     public List<Order> getDeliveryOrders() { return deliveryOrders; }
     public void setDeliveryOrders(List<Order> deliveryOrders) { this.deliveryOrders = deliveryOrders; }
+    public List<Message> getMessages() { return messages; }
+    public void setMessages(List<Message> messages) { this.messages = messages; }
 }
