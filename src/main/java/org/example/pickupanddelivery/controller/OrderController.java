@@ -46,11 +46,4 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAvailableTimes(date, type));
     }
 
-    // New: For dynamic slots
-    //@GetMapping("/checkSlot")
-    //@ResponseBody
-    //public ResponseEntity<List<LocalTime>> checkSlot(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        //List<LocalTime> availableTimes = orderService.getAvailableTimes(date, type);
-        //return ResponseEntity.ok(availableTimes);
-    //}
 }

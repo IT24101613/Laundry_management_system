@@ -173,7 +173,7 @@
                 <div>Customer: <span th:text="${order.customerName} ?: 'N/A'"></span></div>
                 <div>Contact: <span th:text="${order.customerPhone} ?: 'N/A'"></span></div>
                 <div>Pickup Address: <span th:text="${order.customerAddress} ?: 'N/A'"></span></div>
-                <div>Driver: <span th:text="${order.pickupDriver != null ? order.pickupDriver.name : 'Not Assigned'}"></span></div>
+                <div>Pickup Driver: <span th:text="${order.pickupDriver != null ? order.pickupDriver.name : 'Not Assigned'}"></span></div>
                 <div>Delivery Driver: <span th:text="${order.deliveryDriver != null ? order.deliveryDriver.name : 'Not Assigned'}"></span></div>
                 <div>Placed on: <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd')}"></span></span></div>
             </div>
@@ -218,7 +218,7 @@
 
 <footer class="footer">
     <div class="container">
-        <p>&copy; 2024 FreshFold Laundry Management System. All rights reserved.</p>
+        <p>&copy; 2025 FreshFold Laundry Management System. All rights reserved.</p>
     </div>
 </footer>
 </body>

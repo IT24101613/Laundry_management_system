@@ -19,17 +19,17 @@ public class DriverController {
     @Autowired
     private DriverService driverService;
 
-    // Driver dashboard: /driver?driverId=1 (for testing, replace 1 with actual ID from DB)
+    // Driver dashboard: /driver?driverId=1 (replace 1 with actual ID from DB)
     @GetMapping("/driver")
     public String driverDashboard(@RequestParam Long driverId, Model model) {
         List<Order> orders = orderService.getOrdersForDriver(driverId);
         Driver driver = driverService.getDriverById(driverId);
         model.addAttribute("orders", orders);
         model.addAttribute("driver", driver);
-        return "driver";  // New driver.html
+        return "driver";  // New driver
     }
 
-    // Driver updates status (restricted in HTML)
+    // Driver updates status
     @PostMapping("/driver/updateStatus/{id}")
     public String updateStatus(@PathVariable Long id, @RequestParam String status, @RequestParam Long driverId) {
         Order order = orderService.getOrderById(id);
