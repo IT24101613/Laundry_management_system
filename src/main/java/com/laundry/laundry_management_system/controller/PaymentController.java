@@ -1,9 +1,11 @@
 package com.laundry.laundry_management_system.controller;
 
+import com.laundry.laundry_management_system.dto.CardDto;
 import com.laundry.laundry_management_system.dto.PaymentDto;
 import com.laundry.laundry_management_system.model.Payment;
 import com.laundry.laundry_management_system.service.PaymentService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
+    @Autowired
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     }
@@ -57,37 +60,53 @@ public class PaymentController {
     public String showCardPaymentPage(@RequestParam int orderId,
                                       @RequestParam BigDecimal amount,
                                       Model model) {
-        model.addAttribute("orderId", orderId);
-        model.addAttribute("amount", amount);
+        CardDto cardDto = new CardDto();
+        cardDto.setOrderId(orderId);
+        cardDto.setAmount(amount);
+
+        model.addAttribute("cardDto", cardDto);
         return "card-payment";
     }
 
     @PostMapping("/pay/card")
-    public String processCardDetails(@RequestParam String cardholderName,
-                                     @RequestParam String cardNumber,
-                                     @RequestParam String expiryDate,
-                                     @RequestParam String cvv,
-                                     @RequestParam int orderId,
-                                     @RequestParam BigDecimal amount,
-                                     Model model) {
-        model.addAttribute("orderId", orderId);
-        model.addAttribute("cardholderName", cardholderName);
-        model.addAttribute("amount", amount);
+    public String processCard(@Valid @ModelAttribute("cardDto") CardDto cardDto,
+                              BindingResult result,
+                              Model model) {
+        if (result.hasErrors()) {
+            return "card-payment";
+        }
+
+        String otp = paymentService.generateOtp();
+        paymentService.sendOtpEmail("binaliassalaarachchi@gmail.com", otp); // Replace with actual email
+        paymentService.storeOtp(cardDto.getOrderId(), otp);
+
+        model.addAttribute("orderId", cardDto.getOrderId());
+        model.addAttribute("amount", cardDto.getAmount());
         return "otp-verification";
     }
 
-    @PostMapping("/pay/card/otp")
-    public String verifyOtp(@RequestParam String otp,
-                            @RequestParam int orderId,
+    @PostMapping("/verify-otp")
+    public String verifyOtp(@RequestParam int orderId,
+                            @RequestParam String enteredOtp,
                             @RequestParam BigDecimal amount,
-                            RedirectAttributes redirectAttributes) {
+                            RedirectAttributes redirectAttributes,
+                            Model model) {
+        boolean isValid = paymentService.verifyOtp(orderId, enteredOtp);
+        if (isValid) {
+            paymentService.recordPayment(orderId, amount, "Card", "Paid");
 
-        paymentService.recordPayment(orderId, amount, "Card", "Paid");
+            redirectAttributes.addAttribute("orderId", orderId);
+            redirectAttributes.addAttribute("otp", enteredOtp);
 
-        redirectAttributes.addAttribute("orderId", orderId);
-        redirectAttributes.addAttribute("otp", otp);
-        return "redirect:/payments/receipt";
+            return "redirect:/payments/receipt";
+        } else {
+            model.addAttribute("error", "Invalid OTP. Please try again.");
+            model.addAttribute("orderId", orderId);
+            model.addAttribute("amount", amount);
+            return "otp-verification";
+        }
     }
+
 
     @GetMapping("/receipt")
     public String showReceipt(@RequestParam int orderId,
@@ -128,7 +147,7 @@ public class PaymentController {
         paymentService.recordPayment(orderId, amount, "CashOnDelivery", "Pending");
 
         redirectAttributes.addAttribute("orderId", orderId);
-        return "redirect:/payments/receipt";
+        return "redirect:/payments/dashboard?orderId=" + orderId;
     }
 
     @GetMapping("/dashboard")
@@ -146,6 +165,7 @@ public class PaymentController {
         }
 
         model.addAttribute("payment", payment);
+        model.addAttribute("cardDto", new CardDto());
         return "dashboard";
     }
 

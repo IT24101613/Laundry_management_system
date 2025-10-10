@@ -15,6 +15,8 @@
             border-radius: 5px;
             border: none;
             margin-top: 20px;
+            width: 250px;
+            font-size: 1em;
         }
         button {
             background-color: #2563eb;
@@ -23,17 +25,29 @@
             border: none;
             border-radius: 5px;
             margin-top: 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .error-message {
+            color: #f87171;
+            margin-top: 15px;
+            font-size: 0.95em;
         }
     </style>
 </head>
 <body>
 <h2>Enter OTP</h2>
 
-<form th:action="@{/payments/pay/card/otp}" method="post">
+<form th:action="@{/payments/verify-otp}" method="post">
     <input type="hidden" name="orderId" th:value="${orderId}" />
-    <input type="hidden" name="amount" th:value="${amount}" /> <!-- ✅ Fixed -->
-    <input type="text" name="otp" placeholder="Enter OTP" required />
+    <input type="hidden" name="amount" th:value="${amount}" />
+    <input type="text" name="enteredOtp" placeholder="Enter OTP" required />
+
     <button type="submit">Verify & Pay</button>
+
+    <div th:if="${error}" class="error-message">
+        <p th:text="${error}"></p>
+    </div>
 </form>
 
 </body>

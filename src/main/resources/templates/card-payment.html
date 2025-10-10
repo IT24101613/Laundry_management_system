@@ -22,14 +22,32 @@
             margin: 10px 0;
             border: none;
             border-radius: 5px;
+            font-weight: bold;
+            font-size: 1em;
         }
         button {
-            background-color: #2563eb;
-            color: white;
             cursor: pointer;
         }
-        button:hover {
+        .confirm-btn {
+            background-color: #2563eb;
+            color: white;
+        }
+        .confirm-btn:hover {
             background-color: #3b82f6;
+        }
+        .edit-btn {
+            background-color: #6b7280;
+            color: white;
+        }
+        .edit-btn:hover {
+            background-color: #4b5563;
+        }
+        .cancel-btn {
+            background-color: #dc2626;
+            color: white;
+        }
+        .cancel-btn:hover {
+            background-color: #b91c1c;
         }
         .button-group {
             display: flex;
@@ -38,34 +56,124 @@
         .button-group button {
             flex: 1;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 31, 68, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #1e3a8a;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            max-width: 400px;
+        }
+        .modal-message h3 {
+            margin-bottom: 5px;
+        }
+        .modal-message h4 {
+            margin-top: 0;
+            font-weight: normal;
+            font-size: 1em;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 1em;
+        }
+        .modal-cancel {
+            background-color: #dc2626;
+            color: white;
+        }
+        .modal-cancel:hover {
+            background-color: #b91c1c;
+        }
+        .modal-proceed {
+            background-color: #22c55e;
+            color: white;
+        }
+        .modal-proceed:hover {
+            background-color: #16a34a;
+        }
+        .error-message {
+            color: #f87171;
+            font-size: 0.9em;
+            margin-top: -5px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h2>Enter Card Details</h2>
-    <form th:action="@{/payments/pay/card}" method="post">
-        <!-- Hidden fields for orderId and amount -->
-        <input type="hidden" name="orderId" th:value="${orderId}" />
-        <input type="hidden" name="amount" th:value="${amount}" />
+
+    <form th:action="@{/payments/pay/card}" th:object="${cardDto}" method="post">
+        <input type="hidden" th:field="*{orderId}" />
+        <input type="hidden" th:field="*{amount}" />
 
         <label>Cardholder Name:</label>
-        <input type="text" name="cardholderName" required />
+        <input type="text" th:field="*{nameOnCard}" required />
+        <p th:if="${#fields.hasErrors('nameOnCard')}" th:errors="*{nameOnCard}" class="error-message"></p>
 
         <label>Card Number:</label>
-        <input type="text" name="cardNumber" maxlength="16" required />
+        <input type="text" th:field="*{cardNumber}" maxlength="16" required />
+        <p th:if="${#fields.hasErrors('cardNumber')}" th:errors="*{cardNumber}" class="error-message"></p>
 
         <label>Expiry Date:</label>
-        <input type="month" name="expiryDate" required />
+        <input type="text" th:field="*{expiryDate}" placeholder="MM/YY or MM/YYYY" required />
+        <p th:if="${#fields.hasErrors('expiryDate')}" th:errors="*{expiryDate}" class="error-message"></p>
 
         <label>CVV:</label>
-        <input type="password" name="cvv" maxlength="3" required />
+        <input type="password" th:field="*{cvv}" maxlength="3" required />
+        <p th:if="${#fields.hasErrors('cvv')}" th:errors="*{cvv}" class="error-message"></p>
 
         <div class="button-group">
-            <button type="submit">Confirm Payment</button>
-            <button type="reset">Edit</button>
+            <button type="submit" class="confirm-btn">Confirm Payment</button>
+            <button type="reset" class="edit-btn">Edit</button>
+            <button type="button" class="cancel-btn" onclick="openModal()">Cancel Payment</button>
         </div>
     </form>
 </div>
+
+<!-- Modal -->
+<div id="cancelModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-message">
+            <h3>Are you sure you want to cancel?</h3>
+            <h4>This action cannot be undone.</h4>
+        </div>
+        <div class="modal-buttons">
+            <button class="modal-cancel" onclick="redirectToDashboard()">Yes, Cancel Payment</button>
+            <button class="modal-proceed" onclick="closeModal()">No, Proceed with Payment</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById("cancelModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("cancelModal").style.display = "none";
+    }
+
+    function redirectToDashboard() {
+        window.location.href = "/payments/dashboard";
+    }
+</script>
 </body>
 </html>
-
