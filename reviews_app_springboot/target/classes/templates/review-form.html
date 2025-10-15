@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Form</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${review.id == null ? 'Add New Review' : 'Edit Review'}">Review Form</h1>
+        <form th:action="${review.id == null ? '/reviews' : '/reviews/update'}" th:object="${review}" method="post">
+            <input type="hidden" th:field="*{id}" />
+            <p>
+                <label for="author">Author:</label>
+                <input type="text" id="author" th:field="*{author}" required />
+            </p>
+            <p>
+                <label for="title">Title:</label>
+                <input type="text" id="title" th:field="*{title}" required />
+            </p>
+            <p>
+                <label for="content">Content:</label>
+                <textarea id="content" th:field="*{content}" required></textarea>
+            </p>
+            <p>
+                <label for="rating">Rating (1-5):</label>
+                <input type="number" id="rating" th:field="*{rating}" min="1" max="5" required />
+            </p>
+            <p>
+                <button type="submit">Save Review</button>
+                <a href="/reviews" class="button">Cancel</a>
+            </p>
+        </form>
+    </div>
+</body>
+</html>
